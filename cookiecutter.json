@@ -5,17 +5,17 @@
     "project_name": "newproj",
     "project_slug": "{{cookiecutter.project_name}}",
     "git": "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}",
-    "project_short_description": "Python Boilerplate contains all the boilerplate you need to create a Python package.",
+    "project_short_description": "short description",
     "pypi_username": "{{ cookiecutter.github_username }}",
     "version": "0.0.1",
     "docker_registry": "quay.io/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}",
     "use_pytest": "y",
     "create_author_file": "y",
     "open_source_license": [
+        "Apache Software License 2.0",
         "MIT license",
         "BSD license",
         "ISC license",
-        "Apache Software License 2.0",
         "GNU General Public License v3",
         "Not open source"
     ]

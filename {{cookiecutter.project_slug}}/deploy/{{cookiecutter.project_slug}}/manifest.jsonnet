@@ -8,7 +8,7 @@ kpm.package({
    package: {
       name: "{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}",
       expander: "jinja2",
-      author: "{{cookiecutter.author}}",
+      author: "{{cookiecutter.full_name}}",
       version: "{{cookiecutter.version}}-1",
       description: "{{cookiecutter.project_slug}}",
       license: "Apache 2.0",
