@@ -15,6 +15,7 @@ kpm.package({
     },
 
     variables: {
+      appname: "{{cookiecutter.project_slug}}",
       namespace: 'default',
       image: "{{cookiecutter.docker_registry}}:v{{cookiecutter.version}}",
       svc_type: "LoadBalancer",
