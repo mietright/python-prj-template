@@ -49,11 +49,8 @@ clean-test:
 lint:
 	flake8 {{cookiecutter.project_slug}} tests
 
-test-cli:
-	py.test --cov={{cookiecutter.project_slug}} --cov=bin/{{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests -m "cli" --cov-config=.coverage-cli.ini
-
 test:
-	py.test --cov={{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests -m "not cli" --cov-config=.coverage-unit.ini
+	py.test --cov={{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests
 
 test-all:
 	py.test --cov={{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests
@@ -99,3 +96,18 @@ coveralls: test
 
 pylint:
 	pylint --rcfile=~/.pylintrc {{cookiecutter.project_slug}}
+
+coveralls: test
+	coveralls
+
+dockerfile: dist
+	cp deploy/Dockerfile dist
+	docker build --build-arg version=$(VERSION) -t {{cookiecutter.docker_registry}}:v$(VERSION) dist/
+
+dockerfile-canary: dist
+	cp deploy/Dockerfile dist
+	docker build --build-arg version=$(VERSION) -t {{cookiecutter.docker_registry}}:canary dist/
+	docker push quay.io/kubespray/kpm:canary
+
+dockerfile-push: dockerfile
+	docker push {{cookiecutter.docker_registry}}:v$(VERSION)

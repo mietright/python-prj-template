@@ -1,0 +1,15 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: {{cookiecutter.project_slug}}
+  name: {{cookiecutter.project_slug}}
+spec:
+  type: {{svc_type}}
+  ports:
+    - port: 80
+      targetPort: 5000
+      name: {{cookiecutter.project_slug}}
+  selector:
+    k8s-app: {{cookiecutter.project_slug}}
