@@ -12,7 +12,7 @@
     "use_pypi_deployment_with_travis": "y",
     "command_line_interface": [
         "No command-line interface",
-        "Click",
+        "Click"
     ],
     "create_author_file": "y",
     "open_source_license": [
