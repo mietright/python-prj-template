@@ -100,14 +100,12 @@ pylint:
 coveralls: test
 	coveralls
 
-dockerfile: dist
-	cp deploy/Dockerfile dist
-	docker build --build-arg version=$(VERSION) -t {{cookiecutter.docker_registry}}:v$(VERSION) dist/
+dockerfile: clean
+	docker build -t {{cookiecutter.docker_registry}}:v$(VERSION) .
 
-dockerfile-canary: dist
-	cp deploy/Dockerfile dist
-	docker build --build-arg version=$(VERSION) -t {{cookiecutter.docker_registry}}:canary dist/
-	docker push quay.io/kubespray/kpm:canary
+dockerfile-canary: clean
+	docker build -t {{cookiecutter.docker_registry}}:canary .
+	docker push {{cookiecutter.docker_registry}}
 
 dockerfile-push: dockerfile
 	docker push {{cookiecutter.docker_registry}}:v$(VERSION)
