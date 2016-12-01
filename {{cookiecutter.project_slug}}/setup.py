@@ -37,7 +37,7 @@ setup(
     author_email='{{ cookiecutter.email }}',
     url='{{cookiecutter.git}}',
     packages=[
-        '{{ cookiecutter.project_slug }}'
+        '{{ cookiecutter.project_slug }}',
         '{{ cookiecutter.project_slug }}.api'
     ],
     package_dir={'{{ cookiecutter.project_slug }}':

@@ -4,7 +4,7 @@
     "github_username": "ant31",
     "project_name": "newproj",
     "project_slug": "{{cookiecutter.project_name}}",
-    "baseclass": "{{ cookiecutter.project_slug | capitalize}}"
+    "baseclass": "{{ cookiecutter.project_slug | capitalize}}",
     "git": "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}",
     "project_short_description": "short description",
     "pypi_username": "{{ cookiecutter.github_username }}",
