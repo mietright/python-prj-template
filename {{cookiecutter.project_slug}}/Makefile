@@ -95,7 +95,7 @@ coveralls: test
 	coveralls
 
 pylint:
-	pylint --rcfile=~/.pylintrc {{cookiecutter.project_slug}}
+	pylint --rcfile=~/.pylintrc {{cookiecutter.project_slug}}  -E -r y
 
 coveralls: test
 	coveralls

@@ -13,11 +13,16 @@ with open('README.md') as readme_file:
 
 requirements = [
     'futures',
+    'requests',
+    'flask',
+    'Flask>=0.10.1',
+    'flask-cors',
 ]
 
 test_requirements = [
     "pytest",
     "coverage",
+    "pytest-sugar",
     "pytest-cov",
     "pytest-ordering",
     "requests-mock"
@@ -33,6 +38,7 @@ setup(
     url='{{cookiecutter.git}}',
     packages=[
         '{{ cookiecutter.project_slug }}'
+        '{{ cookiecutter.project_slug }}.api'
     ],
     package_dir={'{{ cookiecutter.project_slug }}':
                  '{{ cookiecutter.project_slug }}'},
