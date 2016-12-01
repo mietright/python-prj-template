@@ -11,6 +11,7 @@ endef
 export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 VERSION := `cat VERSION`
+project := "{{cookiecutter.project_slug}}"
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -47,26 +48,26 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 {{cookiecutter.project_slug}} tests
+	flake8 $(project) tests
 
 test:
-	py.test --cov={{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests
+	py.test --cov=$(project) --cov-report=html --cov-report=term-missing  --verbose tests
 
 test-all:
-	py.test --cov={{cookiecutter.project_slug}} --cov-report=html --cov-report=term-missing  --verbose tests
+	py.test --cov=$(project) --cov-report=html --cov-report=term-missing  --verbose tests
 
 tox:
 	tox
 
 coverage:
-	coverage run --source {{cookiecutter.project_slug}} setup.py test
+	coverage run --source $(project) setup.py test
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: install
 	rm -f test1
-	sphinx-apidoc  -f -P -o docs/test1 {{cookiecutter.project_slug}}
+	sphinx-apidoc  -f -P -o docs/test1 $(project)
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
@@ -95,7 +96,7 @@ coveralls: test
 	coveralls
 
 pylint:
-	pylint --rcfile=~/.pylintrc {{cookiecutter.project_slug}}  -E -r y
+	pylint --rcfile=.pylintrc $(project)  -E -r y
 
 coveralls: test
 	coveralls
