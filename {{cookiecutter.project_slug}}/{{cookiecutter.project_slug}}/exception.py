@@ -44,3 +44,8 @@ class UnauthorizedAccess({{ cookiecutter.baseclass }}Exception):
 class Unsupported({{ cookiecutter.baseclass }}Exception):
     status_code = 501
     errorcode = "unsupported"
+
+
+class Unexpected({{ cookiecutter.baseclass }}Exception):
+    status_code = 500
+    errorcode = "unexpected-error"

@@ -4,6 +4,7 @@
     "github_username": "ant31",
     "project_name": "newproj",
     "project_slug": "{{cookiecutter.project_name}}",
+    "varEnvPrefix": "{{cookiecutter.project_slug | upper}}",
     "baseclass": "{{ cookiecutter.project_slug | capitalize}}",
     "project_repo": "{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}",
     "git": "https://github.com/{{cookiecutter.project_repo}}",

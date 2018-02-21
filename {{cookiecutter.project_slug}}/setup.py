@@ -17,6 +17,13 @@ requirements = [
     'flask',
     'Flask>=0.10.1',
     'flask-cors',
+    'PyYaml',
+
+]
+
+celery_requirements = [
+    'celery[redis]',
+    'celery',
 ]
 
 test_requirements = [
@@ -38,12 +45,14 @@ setup(
     url='{{cookiecutter.git}}',
     packages=[
         '{{ cookiecutter.project_slug }}',
-        '{{ cookiecutter.project_slug }}.api'
+        '{{ cookiecutter.project_slug }}.api',
+        '{{ cookiecutter.project_slug }}.api.handlers',
+        '{{ cookiecutter.project_slug }}.jobs',
     ],
     package_dir={'{{ cookiecutter.project_slug }}':
                  '{{ cookiecutter.project_slug }}'},
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=requirements + celery_requirements,
     license="Apache License version 2",
     zip_safe=False,
     keywords=['{{ cookiecutter.project_slug }}'],

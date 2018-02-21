@@ -98,6 +98,9 @@ coveralls: test
 pylint:
 	pylint --rcfile=.pylintrc $(project)  -E -r y
 
+pylint-all:
+	pylint --rcfile=".pylintrc" $(project)
+
 coveralls: test
 	coveralls
 
@@ -110,3 +113,26 @@ dockerfile-canary: clean
 
 dockerfile-push: dockerfile
 	docker push {{cookiecutter.docker_registry}}:v$(VERSION)
+
+mypy:
+	mypy $(project) --ignore-missing-imports
+
+fmt-ci:
+	find . -iname "*.jsonnet" | xargs jsonnet fmt -i -n 2
+	find . -iname "*.libsonnet" | xargs jsonnet fmt -i -n 2
+
+gen-ci: fmt-ci
+	ffctl gen
+
+check: pylint flake8 mypy yapf-test gen-ci gen-config
+
+prepare: yapf gen-ci check
+
+yapf:
+	yapf -r $(project) -i
+
+yapf-diff:
+	yapf -r $(project) -d
+
+yapf-test: yapf-diff
+	if [ `yapf -r appr -d | wc -l` -gt 0 ] ; then false ; else true ;fi

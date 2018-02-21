@@ -1,46 +1,37 @@
-from flask import (jsonify,
-                   request,
-                   Blueprint,
-                   current_app,
-                   url_for)
+import time
+import logging
 
-import {{ cookiecutter.project_slug }}
+from flask import (jsonify, Blueprint, current_app, url_for)
+from {{cookiecutter.project_slug}}.exception import Forbidden
+import {{cookiecutter.project_slug}}
 
+info_app = Blueprint(
+    'info',
+    __name__,
+)
 
-info_app = Blueprint('info', __name__,)
-
-
-@info_app.before_app_request
-def pre_request_logging():
-    jsonbody = request.get_json(force=True, silent=True)
-    values = request.values.to_dict()
-    if jsonbody:
-        values.update(jsonbody)
-
-    current_app.logger.info("request", extra={
-        "remote_addr": request.remote_addr,
-        "http_method": request.method,
-        "original_url": request.url,
-        "path": request.path,
-        "data":  values,
-        "headers": dict(request.headers.to_list())})
+logger = logging.getLogger(__name__)
 
 
 @info_app.route("/")
-def index_discovery():
-    return """<html lang="en">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-    </body>
-    </html>"""
+def index():
+    return version()
+
+
+@info_app.route("/error")
+def gen_error():
+    raise Forbidden("test")
+
+
+@info_app.route("/slow")
+def slow_req():
+    time.sleep(5)
+    return jsonify({"ok": 200})
 
 
 @info_app.route("/version")
 def version():
-    return jsonify({"{{ cookiecutter.project_slug }}-api": {{ cookiecutter.project_slug }}.__version__})
+    return jsonify({"version": {{cookiecutter.project_slug}}.__version__})
 
 
 @info_app.route("/routes")
@@ -53,7 +44,8 @@ def routes():
             options[arg] = "[{0}]".format(arg)
         methods = ','.join(rule.methods)
         url = url_for(rule.endpoint, **options)
-        line = urllib.unquote("{:50s} {:20s} {}".format(rule.endpoint, methods, url))
+        line = urllib.parse.unquote("{:50s} {:20s} {}".format(
+            rule.endpoint, methods, url))
         output.append(line)
     lines = []
     for line in sorted(output):
