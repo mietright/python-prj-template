@@ -1,4 +1,4 @@
-FROM python:3.6.2-alpine
+FROM python:3-alpine
 
 ENV workdir=/opt/{{cookiecutter.project_slug}}
 RUN apk --no-cache --update add openssl ca-certificates
