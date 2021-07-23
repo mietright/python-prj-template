@@ -1,5 +1,4 @@
 bumpversion>=0.5.3
-
 flake8
 coverage>=4.0
 pytest>=2.9.1
