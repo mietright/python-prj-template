@@ -11,7 +11,7 @@ endef
 export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 VERSION := `cat VERSION`
-project := "{{cookiecutter.project_slug}}"
+project := "ibanchecker"
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -41,6 +41,7 @@ clean-pyc:
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
+	find . -name '.mypy_cache' -exec rm -fr {} +
 
 clean-test:
 	rm -fr .tox/
@@ -90,32 +91,24 @@ install: clean
 	python setup.py install
 
 flake8:
-	python setup.py flake8
+	flake8
 
-coveralls: test
-	coveralls
 
-pylint:
+pylint-quick:
 	pylint --rcfile=.pylintrc $(project)  -E -r y
 
-pylint-all:
+pylint:
 	pylint --rcfile=".pylintrc" $(project)
 
-coveralls: test
-	coveralls
-
 dockerfile: clean
-	docker build -t {{cookiecutter.docker_registry}}:v$(VERSION) .
+	docker build -t img.conny.dev/ant31/ibanchecker:v$(VERSION) .
 
 dockerfile-canary: clean
-	docker build -t {{cookiecutter.docker_registry}}:canary .
-	docker push {{cookiecutter.docker_registry}}
+	docker build -t img.conny.dev/ant31/ibanchecker:canary .
+	docker push img.conny.dev/ant31/ibanchecker
 
 dockerfile-push: dockerfile
-	docker push {{cookiecutter.docker_registry}}:v$(VERSION)
-
-mypy:
-	mypy $(project) --ignore-missing-imports
+	docker push img.conny.dev/ant31/ibanchecker:v$(VERSION)
 
 fmt-ci:
 	find . -iname "*.jsonnet" | xargs jsonnet fmt -i -n 2
@@ -124,15 +117,15 @@ fmt-ci:
 gen-ci: fmt-ci
 	ffctl gen
 
-check: pylint flake8 mypy yapf-test gen-ci gen-config
+check: pylint flake8 black-test
+
+pyre:
+	pyre
 
 prepare: yapf gen-ci check
 
-yapf:
-	yapf -r $(project) -i
+black:
+	black -t py39 conf tests $(project)
 
-yapf-diff:
-	yapf -r $(project) -d
-
-yapf-test: yapf-diff
-	if [ `yapf -r appr -d | wc -l` -gt 0 ] ; then false ; else true ;fi
+black-test:
+	black -t py39 conf tests $(project) --check

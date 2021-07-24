@@ -1,0 +1,15 @@
+boto3
+fastapi
+gunicorn
+ocrmypdf
+pydantic
+PyYAML
+requests
+requests-mock
+starlette
+tesseract
+textract
+uvicorn
+uvloop
+aiohttp
+async-timeout

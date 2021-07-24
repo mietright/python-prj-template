@@ -14,17 +14,17 @@ def logfile_path(jsonfmt=False, debug=False):
       - conf/logging_debug.conf      # jsonfmt=false, debug=true
       - conf/logging.conf            # jsonfmt=false, debug=false
     Can be parametrized via envvars: JSONLOG=true, DEBUGLOG=true
-  """
+    """
     _json = ""
     _debug = ""
 
-    if jsonfmt or os.getenv('JSONLOG', 'false').lower() == 'true':
+    if jsonfmt or os.getenv("JSONLOG", "false").lower() == "true":
         _json = "_json"
 
-    if debug or os.getenv('DEBUGLOG', 'false').lower() == 'true':
+    if debug or os.getenv("DEBUGLOG", "false").lower() == "true":
         _debug = "_debug"
 
-    return os.path.join({{ cookiecutter.varEnvPrefix }}_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
+    return os.path.join(IBANCHECKER_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
 
 
 def getenv(name, default=None, convert=str):
@@ -36,7 +36,7 @@ def getenv(name, default=None, convert=str):
     """
 
     # because os.getenv requires string default.
-    internal_default = "(none)"
+    internal_default = "$(none)$"
     val = os.getenv(name, internal_default)
 
     if val == internal_default:
@@ -49,31 +49,36 @@ def getenv(name, default=None, convert=str):
 
 
 def envbool(value: str):
-    return value and (value.lower() in ('1', 'true'))
+    return value and (value.lower() in ("1", "true"))
 
 
 APP_ENVIRON = getenv("APP_ENV", "development")
 
-{{ cookiecutter.varEnvPrefix }}_API = getenv("{{ cookiecutter.varEnvPrefix }}_API", "https://{{ cookiecutter.project_slug }}.example.com")
-{{ cookiecutter.varEnvPrefix }}_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
-{{ cookiecutter.varEnvPrefix }}_ROOT_DIR = os.path.abspath(os.path.join({{ cookiecutter.varEnvPrefix }}_SOURCE_DIR, "../"))
-{{ cookiecutter.varEnvPrefix }}_CONF_DIR = os.getenv("{{ cookiecutter.varEnvPrefix }}_CONF_DIR", os.path.join(
-    {{ cookiecutter.varEnvPrefix }}_ROOT_DIR, "conf/"))
-{{ cookiecutter.varEnvPrefix }}_CONF_FILE = os.getenv("{{ cookiecutter.varEnvPrefix }}_CONF_FILE", None)
+IBANCHECKER_API = getenv("IBANCHECKER_API", "https://ibanchecker.conny.dev")
+IBANCHECKER_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
+IBANCHECKER_ROOT_DIR = os.path.abspath(os.path.join(IBANCHECKER_SOURCE_DIR, "../"))
+IBANCHECKER_CONF_DIR = os.getenv(
+    "IBANCHECKER_CONF_DIR", os.path.join(IBANCHECKER_ROOT_DIR, "conf/")
+)
+IBANCHECKER_CONF_FILE = os.getenv("IBANCHECKER_CONF_FILE", None)
+IBANCHECKER_DOWNLOAD_DIR = os.getenv("IBANCHECKER_DOWNLOAD_DIR", "/tmp/ibanchecker")
 
 
-class {{ cookiecutter.baseclass }}Config(object):
+class IbanCheckerConfig:
     """
+    Class to initialize the projects settings
     """
 
     def __init__(self, defaults=None, confpath=None):
         self.settings = {
-            '{{ cookiecutter.project_slug }}': {
-                'debug': False,
-                'env': APP_ENVIRON,
-                'url': {{ cookiecutter.varEnvPrefix }}_API,
+            "ibanchecker": {
+                "debug": False,
+                "env": APP_ENVIRON,
+                "url": IBANCHECKER_API,
+                "download_dir": IBANCHECKER_DOWNLOAD_DIR,
             },
         }
+
         if defaults:
             self.load_conf(defaults)
 
@@ -81,33 +86,24 @@ class {{ cookiecutter.baseclass }}Config(object):
             self.load_conffile(confpath)
 
     @property
-    def gitlab(self):
-        return self.settings['gitlab']
-
-    @property
-    def github(self):
-        return self.settings['github']
-
-    @property
-    def {{ cookiecutter.project_slug }}(self):
-        return self.settings['{{ cookiecutter.project_slug }}']
+    def ibanchecker(self):
+        return self.settings["ibanchecker"]
 
     def reload(self, confpath, inplace=False):
         if inplace:
             instance = self
             instance.load_conffile(confpath)
         else:
-            instance = {{ cookiecutter.baseclass }}Config(defaults=self.settings, confpath=confpath)
-
+            instance = IbanCheckerConfig(defaults=self.settings, confpath=confpath)
         return instance
 
     def load_conf(self, conf):
-        for key, v in conf.items():
-            self.settings[key].update(v)
+        for key, val in conf.items():
+            self.settings[key].update(val)
 
     def load_conffile(self, confpath):
-        with open(confpath, 'r') as conffile:
+        with open(confpath, "r") as conffile:
             self.load_conf(yaml.load(conffile.read()))
 
 
-GCONFIG = {{ cookiecutter.baseclass }}Config(confpath={{ cookiecutter.varEnvPrefix }}_CONF_FILE)
+GCONFIG = IbanCheckerConfig(confpath=IBANCHECKER_CONF_FILE)
