@@ -1,15 +1,15 @@
 import pathlib
 import time
 from fastapi import FastAPI, Request
-from ibanchecker.api import iban, info
-from ibanchecker.api.middlewares.errors import catch_exceptions_middleware
-from ibanchecker.config import GCONFIG
+from {{cookiecutter.project_slug}}.api import {{cookiecutter.project_slug}}, info
+from {{cookiecutter.project_slug}}.api.middlewares.errors import catch_exceptions_middleware
+from {{cookiecutter.project_slug}}.config import GCONFIG
 
 app = FastAPI()
 
 
 def _create_dl_dir():
-    pathlib.Path(GCONFIG.ibanchecker["download_dir"]).mkdir(parents=True, exist_ok=True)
+    pathlib.Path(GCONFIG.{{cookiecutter.project_slug}}["download_dir"]).mkdir(parents=True, exist_ok=True)
 
 
 @app.middleware("http")
@@ -24,4 +24,4 @@ async def add_process_time_header(request: Request, call_next):
 _create_dl_dir()
 app.middleware("http")(catch_exceptions_middleware)
 app.include_router(info.router)
-app.include_router(iban.router)
+app.include_router({{cookiecutter.project_slug}}.router)

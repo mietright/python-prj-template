@@ -4,13 +4,13 @@ import urllib
 import requests
 import pytest
 
-import ibanchecker
+import {{cookiecutter.project_slug}}
 
 from fastapi.testclient import TestClient
-from ibanchecker.main import app
+from {{cookiecutter.project_slug}}.main import app
 
 
-DEFAULT_PREFIX = "http://localhost:5000"
+DEFAULT_PREFIX = "http://localhost:8000"
 
 
 class TestServer:
@@ -56,24 +56,19 @@ class TestServer:
 
     @property
     def api_prefix(self):
-        return os.getenv("IBANCHECKER_API_PREFIX", "")
+        return os.getenv("{{cookiecutter.varEnvPrefix}}_API_PREFIX", "")
 
     @pytest.fixture(autouse=True)
     def client(self):
         client = TestClient(app)
         return client
 
-    def test_root(self, client):
-        url = self._url_for("")
-        res = self.Client(client, self.headers()).get(url)
-        assert res.status_code == 200
-        assert self.json(res) == {"version": ibanchecker.__version__}
-
     def test_version(self, client):
         url = self._url_for("")
         res = self.Client(client, self.headers()).get(url)
         assert res.status_code == 200
-        assert self.json(res) == {"version": ibanchecker.__version__}
+        assert self.json(res) == {"version": {{cookiecutter.project_slug}}.__version__,
+                                  "gitsha": {{cookiecutter.project_slug}}.__gitsha__}
 
     def test_error(self, client):
         url = self._url_for("/error")
@@ -90,7 +85,7 @@ class TestServer:
         print(url)
         res = self.Client(client, self.headers()).get(url)
         assert res.status_code == 500
-        #        assert self.json(res) == {"version": ibanchecker.__version__}
+        #        assert self.json(res) == {"version": {{cookiecutter.project_slug}}.__version__}
 
 
 BaseTestServer = TestServer
@@ -128,7 +123,7 @@ class LiveTestServer(BaseTestServer):
 
 
 def get_server_class():
-    if os.getenv("IBANCHECKER_TEST_LIVESERVER", "false") == "true":
+    if os.getenv("{{cookiecutter.varEnvPrefix}}_TEST_LIVESERVER", "false") == "true":
         return LiveTestServer
     else:
         return BaseTestServer

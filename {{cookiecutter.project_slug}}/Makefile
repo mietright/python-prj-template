@@ -11,7 +11,7 @@ endef
 export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 VERSION := `cat VERSION`
-project := "ibanchecker"
+project := "{{cookiecutter.project_slug}}"
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -101,14 +101,14 @@ pylint:
 	pylint --rcfile=".pylintrc" $(project)
 
 dockerfile: clean
-	docker build -t img.conny.dev/ant31/ibanchecker:v$(VERSION) .
+	docker build -t img.conny.dev/ant31/{{cookiecutter.project_slug}}:v$(VERSION) .
 
 dockerfile-canary: clean
-	docker build -t img.conny.dev/ant31/ibanchecker:canary .
-	docker push img.conny.dev/ant31/ibanchecker
+	docker build -t img.conny.dev/ant31/{{cookiecutter.project_slug}}:canary .
+	docker push img.conny.dev/ant31/{{cookiecutter.project_slug}}
 
 dockerfile-push: dockerfile
-	docker push img.conny.dev/ant31/ibanchecker:v$(VERSION)
+	docker push img.conny.dev/ant31/{{cookiecutter.project_slug}}:v$(VERSION)
 
 fmt-ci:
 	find . -iname "*.jsonnet" | xargs jsonnet fmt -i -n 2

@@ -24,7 +24,7 @@ def logfile_path(jsonfmt=False, debug=False):
     if debug or os.getenv("DEBUGLOG", "false").lower() == "true":
         _debug = "_debug"
 
-    return os.path.join(IBANCHECKER_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
+    return os.path.join({{cookiecutter.varEnvPrefix}}_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
 
 
 def getenv(name, default=None, convert=str):
@@ -54,28 +54,28 @@ def envbool(value: str):
 
 APP_ENVIRON = getenv("APP_ENV", "development")
 
-IBANCHECKER_API = getenv("IBANCHECKER_API", "https://ibanchecker.conny.dev")
-IBANCHECKER_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
-IBANCHECKER_ROOT_DIR = os.path.abspath(os.path.join(IBANCHECKER_SOURCE_DIR, "../"))
-IBANCHECKER_CONF_DIR = os.getenv(
-    "IBANCHECKER_CONF_DIR", os.path.join(IBANCHECKER_ROOT_DIR, "conf/")
+{{cookiecutter.varEnvPrefix}}_API = getenv("{{cookiecutter.varEnvPrefix}}_API", "https://{{cookiecutter.project_slug}}.conny.dev")
+{{cookiecutter.varEnvPrefix}}_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
+{{cookiecutter.varEnvPrefix}}_ROOT_DIR = os.path.abspath(os.path.join({{cookiecutter.varEnvPrefix}}_SOURCE_DIR, "../"))
+{{cookiecutter.varEnvPrefix}}_CONF_DIR = os.getenv(
+    "{{cookiecutter.varEnvPrefix}}_CONF_DIR", os.path.join({{cookiecutter.varEnvPrefix}}_ROOT_DIR, "conf/")
 )
-IBANCHECKER_CONF_FILE = os.getenv("IBANCHECKER_CONF_FILE", None)
-IBANCHECKER_DOWNLOAD_DIR = os.getenv("IBANCHECKER_DOWNLOAD_DIR", "/tmp/ibanchecker")
+{{cookiecutter.varEnvPrefix}}_CONF_FILE = os.getenv("{{cookiecutter.varEnvPrefix}}_CONF_FILE", None)
+{{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR = os.getenv("{{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR", "/tmp/{{cookiecutter.project_slug}}")
 
 
-class IbanCheckerConfig:
+class {{cookiecutter.baseclass}}Config:
     """
     Class to initialize the projects settings
     """
 
     def __init__(self, defaults=None, confpath=None):
         self.settings = {
-            "ibanchecker": {
+            "{{cookiecutter.project_slug}}": {
                 "debug": False,
                 "env": APP_ENVIRON,
-                "url": IBANCHECKER_API,
-                "download_dir": IBANCHECKER_DOWNLOAD_DIR,
+                "url": {{cookiecutter.varEnvPrefix}}_API,
+                "download_dir": {{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR,
             },
         }
 
@@ -86,15 +86,15 @@ class IbanCheckerConfig:
             self.load_conffile(confpath)
 
     @property
-    def ibanchecker(self):
-        return self.settings["ibanchecker"]
+    def {{cookiecutter.project_slug}}(self):
+        return self.settings["{{cookiecutter.project_slug}}"]
 
     def reload(self, confpath, inplace=False):
         if inplace:
             instance = self
             instance.load_conffile(confpath)
         else:
-            instance = IbanCheckerConfig(defaults=self.settings, confpath=confpath)
+            instance = {{cookiecutter.baseclass}}Config(defaults=self.settings, confpath=confpath)
         return instance
 
     def load_conf(self, conf):
@@ -106,4 +106,4 @@ class IbanCheckerConfig:
             self.load_conf(yaml.load(conffile.read()))
 
 
-GCONFIG = IbanCheckerConfig(confpath=IBANCHECKER_CONF_FILE)
+GCONFIG = {{cookiecutter.baseclass}}Config(confpath={{cookiecutter.varEnvPrefix}}_CONF_FILE)

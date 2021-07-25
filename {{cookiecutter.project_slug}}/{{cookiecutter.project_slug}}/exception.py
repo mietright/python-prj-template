@@ -1,4 +1,4 @@
-class IbanCheckerException(Exception):
+class {{cookiecutter.baseclass}}Exception(Exception):
     status_code = 500
     errorcode = "internal-error"
 
@@ -18,36 +18,36 @@ class IbanCheckerException(Exception):
         return self.message
 
 
-class InvalidUsage(IbanCheckerException):
+class InvalidUsage({{cookiecutter.baseclass}}Exception):
     status_code = 400
     errorcode = "invalid-usage"
 
 
-class InvalidParams(IbanCheckerException):
+class InvalidParams({{cookiecutter.baseclass}}Exception):
     status_code = 422
     errorcode = "invalid-parameters"
 
 
-class ResourceNotFound(IbanCheckerException):
+class ResourceNotFound({{cookiecutter.baseclass}}Exception):
     status_code = 404
     errorcode = "resource-not-found"
 
 
-class Forbidden(IbanCheckerException):
+class Forbidden({{cookiecutter.baseclass}}Exception):
     status_code = 403
     errorcode = "forbidden"
 
 
-class UnauthorizedAccess(IbanCheckerException):
+class UnauthorizedAccess({{cookiecutter.baseclass}}Exception):
     status_code = 401
     errorcode = "unauthorized-access"
 
 
-class Unsupported(IbanCheckerException):
+class Unsupported({{cookiecutter.baseclass}}Exception):
     status_code = 501
     errorcode = "unsupported"
 
 
-class Unexpected(IbanCheckerException):
+class Unexpected({{cookiecutter.baseclass}}Exception):
     status_code = 500
     errorcode = "unexpected-error"

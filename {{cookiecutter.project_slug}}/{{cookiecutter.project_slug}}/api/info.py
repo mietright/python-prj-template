@@ -5,8 +5,8 @@ import logging
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-import ibanchecker
-from ibanchecker.exception import Forbidden
+import {{cookiecutter.project_slug}}
+from {{cookiecutter.project_slug}}.exception import Forbidden
 
 router = APIRouter()
 
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class VersionResp(BaseModel):
     version: str = Field(...)
+    gitsha: str = Field(...)
 
 
 @router.get("/", tags=["info"])
@@ -40,4 +41,5 @@ async def slow_req():
 
 @router.get("/version", tags=["info"], response_model=VersionResp)
 async def version() -> VersionResp:
-    return VersionResp(version=ibanchecker.__version__)
+    return VersionResp(version={{cookiecutter.project_slug}}.__version__,
+    {{cookiecutter.project_slug}}.__gitsha__)
