@@ -1,53 +1,43 @@
+# pylint: disable=no-name-in-module
+# pylint: disable=too-few-public-methods
 import time
 import logging
+from fastapi import APIRouter
+from pydantic import BaseModel, Field
 
-from flask import (jsonify, Blueprint, current_app, url_for)
-from {{cookiecutter.project_slug}}.exception import Forbidden
 import {{cookiecutter.project_slug}}
+from {{cookiecutter.project_slug}}.exception import Forbidden
 
-info_app = Blueprint(
-    'info',
-    __name__,
-)
+router = APIRouter()
 
 logger = logging.getLogger(__name__)
 
 
-@info_app.route("/")
-def index():
-    return version()
+class VersionResp(BaseModel):
+    version: str = Field(...)
 
 
-@info_app.route("/error")
-def gen_error():
+@router.get("/", tags=["info"])
+async def index():
+    return await version()
+
+
+@router.get("/error", tags=["debug"])
+async def gen_error():
     raise Forbidden("test")
 
 
-@info_app.route("/slow")
-def slow_req():
+@router.get("/error_uncatched", tags=["debug"])
+async def gen_error_uncatch():
+    raise Exception()
+
+
+@router.get("/slow", tags=["debug"])
+async def slow_req():
     time.sleep(5)
-    return jsonify({"ok": 200})
+    return {"ok": 200}
 
 
-@info_app.route("/version")
-def version():
-    return jsonify({"version": {{cookiecutter.project_slug}}.__version__})
-
-
-@info_app.route("/routes")
-def routes():
-    import urllib
-    output = []
-    for rule in current_app.url_map.iter_rules():
-        options = {}
-        for arg in rule.arguments:
-            options[arg] = "[{0}]".format(arg)
-        methods = ','.join(rule.methods)
-        url = url_for(rule.endpoint, **options)
-        line = urllib.parse.unquote("{:50s} {:20s} {}".format(
-            rule.endpoint, methods, url))
-        output.append(line)
-    lines = []
-    for line in sorted(output):
-        lines.append(line)
-    return jsonify({"routes": lines})
+@router.get("/version", tags=["info"], response_model=VersionResp)
+async def version() -> VersionResp:
+    return VersionResp(version={{cookiecutter.project_slug}}.__version__)

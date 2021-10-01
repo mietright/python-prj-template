@@ -1,11 +1,17 @@
 # Byte-compiled / optimized / DLL files
+.env
+.python-version
+localconfig.yaml
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.mypy_cache
+**/*.mypy_cache
+.pyre*
+.watchmanconfig
 # C extensions
 *.so
-
+.vscode
 # Distribution / packaging
 .Python
 env/

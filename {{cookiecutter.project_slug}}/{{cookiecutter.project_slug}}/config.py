@@ -3,6 +3,7 @@ Acquire runtime configuration from environment variables (etc).
 """
 
 import os
+from pathlib import Path
 import yaml
 
 
@@ -14,17 +15,17 @@ def logfile_path(jsonfmt=False, debug=False):
       - conf/logging_debug.conf      # jsonfmt=false, debug=true
       - conf/logging.conf            # jsonfmt=false, debug=false
     Can be parametrized via envvars: JSONLOG=true, DEBUGLOG=true
-  """
+    """
     _json = ""
     _debug = ""
 
-    if jsonfmt or os.getenv('JSONLOG', 'false').lower() == 'true':
+    if jsonfmt or os.getenv("JSONLOG", "false").lower() == "true":
         _json = "_json"
 
-    if debug or os.getenv('DEBUGLOG', 'false').lower() == 'true':
+    if debug or os.getenv("DEBUGLOG", "false").lower() == "true":
         _debug = "_debug"
 
-    return os.path.join({{ cookiecutter.varEnvPrefix }}_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
+    return os.path.join({{cookiecutter.varEnvPrefix}}_CONF_DIR, "logging%s%s.conf" % (_debug, _json))
 
 
 def getenv(name, default=None, convert=str):
@@ -36,7 +37,7 @@ def getenv(name, default=None, convert=str):
     """
 
     # because os.getenv requires string default.
-    internal_default = "(none)"
+    internal_default = "$(none)$"
     val = os.getenv(name, internal_default)
 
     if val == internal_default:
@@ -49,31 +50,55 @@ def getenv(name, default=None, convert=str):
 
 
 def envbool(value: str):
-    return value and (value.lower() in ('1', 'true'))
+    return value and (value.lower() in ("1", "true"))
 
 
 APP_ENVIRON = getenv("APP_ENV", "development")
 
-{{ cookiecutter.varEnvPrefix }}_API = getenv("{{ cookiecutter.varEnvPrefix }}_API", "https://{{ cookiecutter.project_slug }}.example.com")
-{{ cookiecutter.varEnvPrefix }}_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
-{{ cookiecutter.varEnvPrefix }}_ROOT_DIR = os.path.abspath(os.path.join({{ cookiecutter.varEnvPrefix }}_SOURCE_DIR, "../"))
-{{ cookiecutter.varEnvPrefix }}_CONF_DIR = os.getenv("{{ cookiecutter.varEnvPrefix }}_CONF_DIR", os.path.join(
-    {{ cookiecutter.varEnvPrefix }}_ROOT_DIR, "conf/"))
-{{ cookiecutter.varEnvPrefix }}_CONF_FILE = os.getenv("{{ cookiecutter.varEnvPrefix }}_CONF_FILE", None)
+{{cookiecutter.varEnvPrefix}}_API = getenv("{{cookiecutter.varEnvPrefix}}_API", "https://{{cookiecutter.project_slug}}.conny.dev")
+{{cookiecutter.varEnvPrefix}}_SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
+{{cookiecutter.varEnvPrefix}}_ROOT_DIR = os.path.abspath(os.path.join({{cookiecutter.varEnvPrefix}}_SOURCE_DIR, "../"))
+{{cookiecutter.varEnvPrefix}}_CONF_DIR = os.getenv(
+    "{{cookiecutter.varEnvPrefix}}_CONF_DIR", os.path.join({{cookiecutter.varEnvPrefix}}_ROOT_DIR, "conf/")
+)
+{{cookiecutter.varEnvPrefix}}_CONF_FILE = os.getenv("{{cookiecutter.varEnvPrefix}}_CONF_FILE", None)
+{{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR = os.getenv("{{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR", "/tmp/{{cookiecutter.project_slug}}")
+{{cookiecutter.varEnvPrefix}}_TOKEN = os.getenv(
+    "{{cookiecutter.varEnvPrefix}}_TOKEN", "changeme"
+)  # Set to None or empty to skip the token
+
+{{cookiecutter.varEnvPrefix}}_TMP_DIR = os.getenv("{{cookiecutter.varEnvPrefix}}_TMP_DIR", "/tmp/{{cookiecutter.project_slug}}")
+{{cookiecutter.varEnvPrefix}}_SENTRY_URL = os.getenv("{{cookiecutter.varEnvPrefix}}_SENTRY_URL", None)
+{{cookiecutter.varEnvPrefix}}_SENTRY_ENV = os.getenv("{{cookiecutter.varEnvPrefix}}_SENTRY_ENV", "development")
+
+PROMETHEUS_MULTIPROC_DIR = os.getenv(
+    "PROMETHEUS_MULTIPROC_DIR", os.path.join({{cookiecutter.varEnvPrefix}}_TMP_DIR, "prometheus")
+)
+os.environ["PROMETHEUS_MULTIPROC_DIR"] = PROMETHEUS_MULTIPROC_DIR
 
 
-class {{ cookiecutter.baseclass }}Config(object):
+class {{cookiecutter.baseclass}}Config:
     """
+    Class to initialize the projects settings
     """
 
     def __init__(self, defaults=None, confpath=None):
         self.settings = {
-            '{{ cookiecutter.project_slug }}': {
-                'debug': False,
-                'env': APP_ENVIRON,
-                'url': {{ cookiecutter.varEnvPrefix }}_API,
+            "{{cookiecutter.project_slug}}": {
+                "debug": False,
+                "env": APP_ENVIRON,
+                "url": {{cookiecutter.varEnvPrefix}}_API,
+                "download_dir": {{cookiecutter.varEnvPrefix}}_DOWNLOAD_DIR,
+                "token": {{cookiecutter.varEnvPrefix}}_TOKEN,
+                "tmp_dir": {{cookiecutter.varEnvPrefix}}_TMP_DIR,
+                "prometheus_dir": PROMETHEUS_MULTIPROC_DIR,
+            },
+            "sentry": {
+                "url": {{cookiecutter.varEnvPrefix}}_SENTRY_URL,
+                "environment": {{cookiecutter.varEnvPrefix}}_SENTRY_ENV,
             },
         }
+
         if defaults:
             self.load_conf(defaults)
 
@@ -81,33 +106,28 @@ class {{ cookiecutter.baseclass }}Config(object):
             self.load_conffile(confpath)
 
     @property
-    def gitlab(self):
-        return self.settings['gitlab']
+    def {{cookiecutter.project_slug}}(self):
+        return self.settings["{{cookiecutter.project_slug}}"]
 
     @property
-    def github(self):
-        return self.settings['github']
-
-    @property
-    def {{ cookiecutter.project_slug }}(self):
-        return self.settings['{{ cookiecutter.project_slug }}']
+    def sentry(self):
+        return self.settings["sentry"]
 
     def reload(self, confpath, inplace=False):
         if inplace:
             instance = self
             instance.load_conffile(confpath)
         else:
-            instance = {{ cookiecutter.baseclass }}Config(defaults=self.settings, confpath=confpath)
-
+            instance = {{cookiecutter.baseclass}}Config(defaults=self.settings, confpath=confpath)
         return instance
 
     def load_conf(self, conf):
-        for key, v in conf.items():
-            self.settings[key].update(v)
+        for key, val in conf.items():
+            self.settings[key].update(val)
 
     def load_conffile(self, confpath):
-        with open(confpath, 'r') as conffile:
-            self.load_conf(yaml.load(conffile.read()))
+        with open(confpath, "r", encoding="utf-8") as conffile:
+            self.load_conf(yaml.safe_load(conffile.read()))
 
 
-GCONFIG = {{ cookiecutter.baseclass }}Config(confpath={{ cookiecutter.varEnvPrefix }}_CONF_FILE)
+GCONFIG = {{cookiecutter.baseclass}}Config(confpath={{cookiecutter.varEnvPrefix}}_CONF_FILE)

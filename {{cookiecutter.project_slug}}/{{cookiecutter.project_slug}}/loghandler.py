@@ -9,7 +9,7 @@ import logging
 import re
 import traceback
 
-LOG_FORMAT_REGEXP = re.compile(r'\((.+?)\)', re.IGNORECASE)
+LOG_FORMAT_REGEXP = re.compile(r"\((.+?)\)", re.IGNORECASE)
 
 
 def _json_default(obj):
@@ -19,8 +19,7 @@ def _json_default(obj):
     """
     if isinstance(obj, (datetime.date, datetime.time, datetime.datetime)):
         return obj.isoformat()
-
-    elif isinstance(obj, Exception):
+    if isinstance(obj, Exception):
         return "Exception: %s" % str(obj)
 
     return str(obj)
@@ -28,12 +27,32 @@ def _json_default(obj):
 
 # skip natural LogRecord attributes
 # http://docs.python.org/library/logging.html#logrecord-attributes
-RESERVED_ATTRS = set([
-    'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename',
-    'funcName', 'levelname', 'levelno', 'lineno', 'module', 'msecs', 'message',
-    'msg', 'name', 'pathname', 'process', 'processName', 'relativeCreated',
-    'stack_info', 'thread', 'threadName'
-])
+RESERVED_ATTRS = set(
+    [
+        "args",
+        "asctime",
+        "created",
+        "exc_info",
+        "exc_text",
+        "filename",
+        "funcName",
+        "levelname",
+        "levelno",
+        "lineno",
+        "module",
+        "msecs",
+        "message",
+        "msg",
+        "name",
+        "pathname",
+        "process",
+        "processName",
+        "relativeCreated",
+        "stack_info",
+        "thread",
+        "threadName",
+    ]
+)
 
 
 class JsonFormatter(logging.Formatter):
@@ -59,7 +78,6 @@ class JsonFormatter(logging.Formatter):
         self.prefix_key = kwargs.pop("prefix_key", "data")
 
         logging.Formatter.__init__(self, *args, **kwargs)
-
         self._fmt_parameters = self._parse_format_string()
         self._skip_fields = set(self._fmt_parameters)
         self._skip_fields.update(RESERVED_ATTRS)
@@ -72,7 +90,7 @@ class JsonFormatter(logging.Formatter):
     def add_fields(self, log_record, record, message_dict):
         """
         Override this method to implement custom logic for adding fields.
-    """
+        """
 
         target = log_record
         if self.prefix_key:
@@ -85,8 +103,8 @@ class JsonFormatter(logging.Formatter):
             elif field not in RESERVED_ATTRS:
                 target[field] = value
 
+        # target.update(self.default_values)
         target.update(message_dict)
-        target.update(self.default_values)
 
     def format(self, record):
         """Formats a log record and serializes to json"""
@@ -105,12 +123,14 @@ class JsonFormatter(logging.Formatter):
 
         # Display formatted exception, but allow overriding it in the
         # user-supplied dict.
-        if record.exc_info and not message_dict.get('exc_info'):
-            message_dict['exc_info'] = traceback.format_list(
-                traceback.extract_tb(record.exc_info[2]))
+        if record.exc_info and not message_dict.get("exc_info"):
+            message_dict["exc_info"] = traceback.format_list(
+                traceback.extract_tb(record.exc_info[2])
+            )
         log_record = {}
 
         self.add_fields(log_record, record, message_dict)
 
-        return self.json_serializer(log_record, default=self.json_default,
-                                    cls=self.json_encoder)
+        return self.json_serializer(
+            log_record, default=self.json_default, cls=self.json_encoder
+        )
