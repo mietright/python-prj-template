@@ -1,6 +1,6 @@
 [style]
-based_on_style = chromium
-COLUMN_LIMIT=79
+based_on_style = yapf
+COLUMN_LIMIT=120
 INDENT_WIDTH=4
 BLANK_LINE_BEFORE_CLASS_DOCSTRING=False
 #True
