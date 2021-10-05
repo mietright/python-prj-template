@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean test test-all
+.PHONY: black black-test check clean clean-build clean-pyc clean-test coverage dist dockerfile dockerfile-canary dockerfile-push docs flake8 fmt-ci gen-ci help install lint prepare pylint pylint-quick pyre release rename servedocs test test-all tox
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 try:
@@ -80,7 +80,6 @@ release: clean
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
 
-
 dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
@@ -93,7 +92,6 @@ install: clean
 flake8:
 	flake8
 
-
 pylint-quick:
 	pylint --rcfile=.pylintrc $(project)  -E -r y
 
@@ -101,7 +99,7 @@ pylint:
 	pylint --rcfile=".pylintrc" $(project)
 
 dockerfile: clean
-docker build -t {{cookiecutter.docker_registry}}:v$(VERSION) .
+	docker build -t {{cookiecutter.docker_registry}}:v$(VERSION) .
 
 dockerfile-canary: clean
 	docker build -t {{cookiecutter.docker_registry}}:canary .
