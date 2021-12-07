@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
 import subprocess
+from pathlib import Path
 
-__version__ = "0.0.1"
+def _parse_version():
+    version_file = list(Path(__file__).resolve().parents[1].glob("VERSION"))
+    if version_file:
+        return version_file[0].read_text().strip()
+    return "0.0.1"
+
+
+__version__ = _parse_version()
 
 
 def _get_git_sha():

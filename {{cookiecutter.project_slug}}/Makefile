@@ -1,4 +1,4 @@
-.PHONY: black black-test check clean clean-build clean-pyc clean-test coverage dist dockerfile dockerfile-canary dockerfile-push docs flake8 fmt-ci gen-ci help install lint prepare pylint pylint-quick pyre release rename servedocs test test-all tox
+.PHONY: black black-test check clean clean-build clean-pyc clean-test coverage dist dockerfile dockerfile-canary dockerfile-push docs flake8 gen-ci help install lint prepare pylint pylint-quick pyre release rename servedocs test test-all tox
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 try:
@@ -108,11 +108,7 @@ dockerfile-canary: clean
 dockerfile-push: dockerfile
 	docker push {{cookiecutter.docker_registry}}:v$(VERSION)
 
-fmt-ci:
-	find . -iname "*.jsonnet" | xargs jsonnet fmt -i -n 2
-	find . -iname "*.libsonnet" | xargs jsonnet fmt -i -n 2
-
-gen-ci: fmt-ci
+gen-ci:
 	ffctl gen
 
 check: pylint flake8 black-test

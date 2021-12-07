@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{cookiecutter.project_slug}}
+  labels:
+    app.kubernetes.io/name: {{cookiecutter.project_slug}}
+spec:
+  template:
+    spec:
+      containers:
+      - image: img.conny.dev/conny/{{cookiecutter.docker_registry}}
+        name: {{cookiecutter.project_slug}}
+        args:
+          - --port=8080
+        ports:
+        - containerPort: 8080
+          name: http
