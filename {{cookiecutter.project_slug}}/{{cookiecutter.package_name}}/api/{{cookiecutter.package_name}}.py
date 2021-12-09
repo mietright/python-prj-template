@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 
 # CHANGE BELOW
 description = "A description of your App "\
-"using string concatenation"
+    "using string concatenation"
 title = "Custom App"
 version = "0.0.42"
 
 
 class Item(BaseModel):
     item1: str = Field(...)
+
 
 class ResponseExample(BaseModel):
     synced: bool = Field(...)

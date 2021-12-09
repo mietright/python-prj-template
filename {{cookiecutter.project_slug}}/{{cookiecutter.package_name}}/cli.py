@@ -1,10 +1,7 @@
 import pathlib
-from pathlib import Path
 import time
 import logging
-import importlib.util
 
-import aiohttp
 import click
 from fastapi import FastAPI, Request
 import sentry_sdk
@@ -64,7 +61,7 @@ app.add_route("/metrics", handle_metrics)
 app.middleware("http")(catch_exceptions_middleware)
 app.include_router(info.router)
 app.include_router(api.router)
-### Uncomment to check a token before serving the API
+# Uncomment below to check a token before serving the API
 # app.middleware("http")(add_check_token)
 
 @click.group(invoke_without_command=True)
@@ -85,4 +82,4 @@ def cli(ctx, host, port):
 cli.command("openapi")(openapi)
 
 if __name__ == "__main__":
-    main()
+    cli()

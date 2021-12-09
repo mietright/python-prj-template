@@ -1,7 +1,6 @@
 import json
 import logging
 
-import click
 from fastapi import FastAPI
 
 from {{cookiecutter.package_name}}.api import {{cookiecutter.package_name}} as api
