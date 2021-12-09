@@ -84,4 +84,4 @@ def cli(ctx, host, port):
 cli.command("openapi")(openapi)
 
 if __name__ == "__main__":
-    main()
+    cli()
