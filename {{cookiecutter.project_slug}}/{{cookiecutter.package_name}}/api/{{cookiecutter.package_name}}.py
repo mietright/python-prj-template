@@ -6,8 +6,6 @@ import logging
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from {{cookiecutter.package_name}}.config import GCONFIG
-
 
 router = APIRouter(prefix="/api/v1", tags=["{{cookiecutter.package_name}}"])
 

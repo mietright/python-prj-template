@@ -1,10 +1,7 @@
 import pathlib
-from pathlib import Path
 import time
 import logging
-import importlib.util
 
-import aiohttp
 import click
 from fastapi import FastAPI, Request
 import sentry_sdk
