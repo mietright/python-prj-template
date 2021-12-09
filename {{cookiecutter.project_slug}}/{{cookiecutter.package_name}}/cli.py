@@ -18,7 +18,7 @@ from {{cookiecutter.package_name}}.api import info
 from {{cookiecutter.package_name}}.api.middlewares.errors import catch_exceptions_middleware
 from {{cookiecutter.package_name}}.exception import UnauthorizedAccess
 from {{cookiecutter.package_name}}.config import GCONFIG
-from {{cookiecutter.package_name}}.openapi import openapi
+from {{cookiecutter.package_name}}.openapi import openapi, _set_attrs
 
 
 if "url" in GCONFIG.sentry:
@@ -56,6 +56,7 @@ def _create_tmp_dir():
 
 
 _create_tmp_dir()
+_set_attrs(app, api)
 app.add_middleware(PrometheusMiddleware, app_name="{{cookiecutter.package_name}}")
 app.add_middleware(ProxyHeadersMiddleware)
 app.add_middleware(SentryAsgiMiddleware)

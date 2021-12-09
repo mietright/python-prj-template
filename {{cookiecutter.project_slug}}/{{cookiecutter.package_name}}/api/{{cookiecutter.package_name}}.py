@@ -14,6 +14,12 @@ router = APIRouter(prefix="/api/v1", tags=["{{cookiecutter.package_name}}"])
 logger = logging.getLogger(__name__)
 
 # CHANGE BELOW
+description = "A description of your App "\
+"using string concatenation"
+title = "Custom App"
+version = "0.0.42"
+
+
 class Item(BaseModel):
     item1: str = Field(...)
 
@@ -27,7 +33,7 @@ class ResponseExample(BaseModel):
 async def example_route(item: Item) -> ResponseExample:
 
     # ... your logic goes here
-    
+
     return ResponseExample(
         synced=True,
         fstat="example",
