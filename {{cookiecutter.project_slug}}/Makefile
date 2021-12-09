@@ -11,7 +11,7 @@ endef
 export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 VERSION := `cat VERSION`
-project := "{{ cookiecutter.project_slug }}"
+package := "{{ cookiecutter.package_name }}"
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -49,26 +49,26 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 $(project) tests
+	flake8 $(package) tests
 
 test:
-	py.test --cov=$(project) --cov-report=html --cov-report=term-missing  --verbose tests
+	py.test --cov=$(package) --cov-report=html --cov-report=term-missing  --verbose tests
 
 test-all:
-	py.test --cov=$(project) --cov-report=html --cov-report=term-missing  --verbose tests
+	py.test --cov=$(package) --cov-report=html --cov-report=term-missing  --verbose tests
 
 tox:
 	tox
 
 coverage:
-	coverage run --source $(project) setup.py test
+	coverage run --source $(package) setup.py test
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: install
 	rm -f test1
-	sphinx-apidoc  -f -P -o docs/test1 $(project)
+	sphinx-apidoc  -f -P -o docs/test1 $(package)
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
@@ -93,10 +93,10 @@ flake8:
 	flake8
 
 pylint-quick:
-	pylint --rcfile=.pylintrc $(project)  -E -r y
+	pylint --rcfile=.pylintrc $(package)  -E -r y
 
 pylint:
-	pylint --rcfile=".pylintrc" $(project)
+	pylint --rcfile=".pylintrc" $(package)
 
 dockerfile: clean
 	docker build -t {{cookiecutter.docker_registry}}:v$(VERSION) .
@@ -119,10 +119,10 @@ pyre:
 prepare: yapf gen-ci check
 
 black:
-	black -t py39 conf tests $(project)
+	black -t py39 conf tests $(package)
 
 black-test:
-	black -t py39 conf tests $(project) --check
+	black -t py39 conf tests $(package) --check
 
 rename:
 	ack {{cookiecutter.varEnvPrefix}} -l | xargs -i{} sed -r -i "s/{{cookiecutter.varEnvPrefix}}/\{\{cookiecutter.varEnvPrefix\}\}/g" {}
