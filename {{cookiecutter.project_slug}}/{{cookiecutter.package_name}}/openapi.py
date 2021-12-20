@@ -1,5 +1,4 @@
 import json
-import logging
 
 from fastapi import FastAPI
 
@@ -21,10 +20,6 @@ def _set_attrs(app, api):
 
 
 def openapi():
-    log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
-    logger = logging.getLogger(__name__)
-
     app = FastAPI()
     _set_attrs(app, api)
     app.include_router(api.router)
